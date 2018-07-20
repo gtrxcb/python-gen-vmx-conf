@@ -1,0 +1,46 @@
+---
+HOST:
+    identifier                : {{ hostname }}   # Maximum 6 characters
+    host-management-interface : {{ mgmt_iface }}
+    routing-engine-image      : "{{ re_image }}"
+    routing-engine-hdd        : "{{ re_hdd }}"
+    forwarding-engine-image   : "{{ pfe_image }}"
+
+---
+#External bridge configuration
+BRIDGES:
+    - type  : external
+      name  : br_vlan254                  # Max 10 characters
+
+---
+#vRE VM parameters
+CONTROL_PLANE:
+    vcpus       : {{ re_vcpus }}
+    memory-mb   : {{ re_memory }}
+    console_port: {{ re_console_port }}
+
+    interfaces  :
+      - type      : static
+        ipaddr    : 10.102.144.94 # Internal IP between RE and PFE
+        macaddr   : {{ re_mac }}
+
+---
+#vPFE VM parameters
+FORWARDING_PLANE:
+    memory-mb   : 8192
+    vcpus       : 4
+    console_port: 8602
+    device-type : virtio
+
+    interfaces  :
+      - type      : static
+        ipaddr    : 10.102.144.98  # Internal IP between RE and PFE
+        macaddr   : {{ pfe_mac }}
+
+# PFE Interfaces
+JUNOS_DEVICES:
+{% for iface in interfaces %}
+   - interface          : {{ iface['iface_entry'][0] }}
+     mac-address        : {{ iface['iface_entry'][1] }}
+     description        : {{ iface['iface_entry'][2] }}
+{% endfor %}
