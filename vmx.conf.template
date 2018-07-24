@@ -37,6 +37,7 @@ FORWARDING_PLANE:
         ipaddr    : 10.102.144.98  # Internal IP between RE and PFE
         macaddr   : {{ pfe_mac }}
 
+---
 # PFE Interfaces
 JUNOS_DEVICES:
 {% for iface in interfaces %}
